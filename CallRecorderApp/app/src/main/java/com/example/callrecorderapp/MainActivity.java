@@ -25,8 +25,9 @@ public class MainActivity extends AppCompatActivity {
     EditText phonenumber;
     FloatingActionButton callbutton;
     private final int REQUEST_CALL_PERMISSION = 100;
-    private final int REQUEST_MICROPHONE_PERMISSION = 101;
-    private final int WRITE_EXTERNAL_STORAGE_PERMISSION = 102;
+    private final int READ_PHONE_STATE_PERMISSION = 101;
+    private final int REQUEST_MICROPHONE_PERMISSION = 102;
+    private final int WRITE_EXTERNAL_STORAGE_PERMISSION = 103;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,13 +36,18 @@ public class MainActivity extends AppCompatActivity {
         phonenumber = findViewById(R.id.editTextPhone);
         callbutton = findViewById(R.id.callbutton);
 
-        if (ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.CALL_PHONE},REQUEST_CALL_PERMISSION);
 
         }
 
-        if (ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, READ_PHONE_STATE_PERMISSION);
+        }
+
+        if (ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.RECORD_AUDIO},REQUEST_MICROPHONE_PERMISSION);
 
@@ -52,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE_PERMISSION);
         }
 
+
         callbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,13 +67,12 @@ public class MainActivity extends AppCompatActivity {
                 Intent i = new Intent(Intent.ACTION_CALL);
                 i.setData(Uri.parse("tel:"+phonenum));
                 startActivity(i);
-
             }
         });
+
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         NewPhoneStateListener phoneStateListener = new NewPhoneStateListener();
         tm.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
     }
 
 }
-
